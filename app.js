@@ -333,6 +333,26 @@ document.addEventListener('DOMContentLoaded', () => {
     ev.stopPropagation();
     showInputInteraction('main-circle');
   });
+  
+  // Main circle touch - show main-circle mode
+  let mainCircleTouchStartTime = 0;
+  circle.addEventListener('touchstart', (ev) => {
+    mainCircleTouchStartTime = Date.now();
+    console.log('Main circle touchstart');
+  });
+  
+  circle.addEventListener('touchend', (ev) => {
+    const touchDuration = Date.now() - mainCircleTouchStartTime;
+    console.log('Main circle touchend:', 'duration:', touchDuration, 'isLongPress:', isLongPress, 'isDragging:', isDragging);
+    
+    // 짧은 터치 (300ms 미만)이고 드래그가 아닌 경우에만 클릭으로 처리
+    if (touchDuration < 300 && !isLongPress && !isDragging) {
+      console.log('Main circle touch - opening input');
+      ev.stopPropagation();
+      ev.preventDefault();
+      showInputInteraction('main-circle');
+    }
+  });
 
   // Click outside to close
   document.addEventListener('click', (ev) => {
@@ -393,11 +413,31 @@ document.addEventListener('DOMContentLoaded', () => {
     el.textContent = text;
     el.style.cursor = 'pointer';
     el.setAttribute('data-dot-id', String(dotId)); // Store dot ID as string in element
-    // 직접 클릭 이벤트 추가
+    // 직접 클릭 이벤트 추가 (마우스와 터치 모두 지원)
     el.addEventListener('click', (ev) => {
       console.log('Direct click on dot:', text, 'ID:', dotId);
       ev.stopPropagation();
       showInputInteraction('small-dot', text, dotId);
+    });
+    
+    // 터치 이벤트도 추가 (모바일 지원)
+    let touchStartTime = 0;
+    el.addEventListener('touchstart', (ev) => {
+      touchStartTime = Date.now();
+      console.log('Dot touchstart:', text);
+    });
+    
+    el.addEventListener('touchend', (ev) => {
+      const touchDuration = Date.now() - touchStartTime;
+      console.log('Dot touchend:', text, 'duration:', touchDuration, 'isLongPress:', isLongPress, 'isDragging:', isDragging);
+      
+      // 짧은 터치 (300ms 미만)이고 드래그가 아닌 경우에만 클릭으로 처리
+      if (touchDuration < 300 && !isLongPress && !isDragging) {
+        console.log('Direct touch on dot:', text, 'ID:', dotId);
+        ev.stopPropagation();
+        ev.preventDefault();
+        showInputInteraction('small-dot', text, dotId);
+      }
     });
     canvas.appendChild(el);
     // spawn from top with random x
@@ -724,10 +764,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Touch events
+  // Touch events for drag and drop (only for placed dots)
   document.addEventListener('touchstart', (ev) => {
+    console.log('Global touch start detected:', ev.target);
     const target = ev.target.closest('.placed-dot');
     if (target && ev.touches.length === 1) {
+      console.log('Global touch start on placed-dot:', target.textContent);
       // Don't preventDefault here - let normal clicks work
       const touch = ev.touches[0];
       startDrag(target, touch.clientX, touch.clientY);
@@ -754,6 +796,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.addEventListener('touchend', (ev) => {
+    console.log('Touch end detected:', ev.target, 'isLongPress:', isLongPress, 'isDragging:', isDragging);
+    
     if (longPressTimer) {
       clearTimeout(longPressTimer);
       longPressTimer = null;
