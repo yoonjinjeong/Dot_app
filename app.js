@@ -558,24 +558,32 @@ document.addEventListener('DOMContentLoaded', () => {
   // 드래그 핸들러 함수들
   const handleDragMove = (ev) => {
     if (isDragging && draggedElement) {
-      // 드래그 중인 원을 마우스 위치로 이동
-      const newX = ev.clientX - dragOffset.x;
-      const newY = ev.clientY - dragOffset.y;
-      draggedElement.style.left = newX + 'px';
-      draggedElement.style.top = newY + 'px';
-      console.log('Dragging to:', newX, newY); // 디버깅
+      // 드래그 중인 원을 마우스/터치 위치로 이동
+      const clientX = ev.clientX || (ev.touches && ev.touches[0].clientX);
+      const clientY = ev.clientY || (ev.touches && ev.touches[0].clientY);
+      
+      if (clientX !== undefined && clientY !== undefined) {
+        const newX = clientX - dragOffset.x;
+        const newY = clientY - dragOffset.y;
+        draggedElement.style.left = newX + 'px';
+        draggedElement.style.top = newY + 'px';
+        console.log('Dragging to:', newX, newY); // 디버깅
+      }
     }
   };
 
   const handleDragEnd = (ev) => {
     if (isDragging && draggedElement) {
       // 드래그 종료 - 드롭 영역 확인
+      const clientX = ev.clientX || (ev.changedTouches && ev.changedTouches[0].clientX);
+      const clientY = ev.clientY || (ev.changedTouches && ev.changedTouches[0].clientY);
+      
       const gradientRect = topGradient?.getBoundingClientRect();
-      if (gradientRect && 
-          ev.clientX >= gradientRect.left && 
-          ev.clientX <= gradientRect.right &&
-          ev.clientY >= gradientRect.top && 
-          ev.clientY <= gradientRect.bottom) {
+      if (gradientRect && clientX !== undefined && clientY !== undefined &&
+          clientX >= gradientRect.left && 
+          clientX <= gradientRect.right &&
+          clientY >= gradientRect.top && 
+          clientY <= gradientRect.bottom) {
         // 그래디언트 영역에 드롭됨 - 원 삭제
         console.log('Dropped in gradient area, deleting dot:', draggedElement.textContent);
         
@@ -650,20 +658,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  document.addEventListener('mousedown', (ev) => {
+  // 공통 드래그 시작 함수
+  const handleDragStart = (ev) => {
     const target = ev.target.closest('.placed-dot');
     if (target) {
       isLongPress = false;
       isDragging = false;
       
-      // 드래그 시작을 위한 마우스 위치 저장
-      const rect = target.getBoundingClientRect();
-      dragOffset.x = ev.clientX - rect.left;
-      dragOffset.y = ev.clientY - rect.top;
+      // 터치/마우스 위치 가져오기
+      const clientX = ev.clientX || (ev.touches && ev.touches[0].clientX);
+      const clientY = ev.clientY || (ev.touches && ev.touches[0].clientY);
       
-      // 마우스 위치를 저장 (타이머 내부에서 사용)
-      const mouseX = ev.clientX;
-      const mouseY = ev.clientY;
+      if (clientX === undefined || clientY === undefined) return;
+      
+      // 드래그 시작을 위한 위치 저장
+      const rect = target.getBoundingClientRect();
+      dragOffset.x = clientX - rect.left;
+      dragOffset.y = clientY - rect.top;
+      
+      // 위치를 저장 (타이머 내부에서 사용)
+      const startX = clientX;
+      const startY = clientY;
       
       // Long press timer 시작 (500ms)
       longPressTimer = setTimeout(() => {
@@ -681,17 +696,19 @@ document.addEventListener('DOMContentLoaded', () => {
           mainCircle.style.opacity = '0';
         }
         
-        // 드래그 시작 - 원을 마우스 위치로 이동
+        // 드래그 시작 - 원을 터치/마우스 위치로 이동
         target.style.position = 'fixed';
         target.style.zIndex = '1000';
         target.style.pointerEvents = 'none';
         target.style.transform = 'none';
-        target.style.left = (mouseX - dragOffset.x) + 'px';
-        target.style.top = (mouseY - dragOffset.y) + 'px';
+        target.style.left = (startX - dragOffset.x) + 'px';
+        target.style.top = (startY - dragOffset.y) + 'px';
         
-        // 전역 mousemove 이벤트 활성화
+        // 전역 드래그 이벤트 활성화 (마우스 + 터치)
         document.addEventListener('mousemove', handleDragMove);
         document.addEventListener('mouseup', handleDragEnd);
+        document.addEventListener('touchmove', handleDragMove, { passive: false });
+        document.addEventListener('touchend', handleDragEnd);
       }, 500);
     }
   });
@@ -736,6 +753,8 @@ document.addEventListener('DOMContentLoaded', () => {
       // 이벤트 리스너 제거
       document.removeEventListener('mousemove', handleDragMove);
       document.removeEventListener('mouseup', handleDragEnd);
+      document.removeEventListener('touchmove', handleDragMove);
+      document.removeEventListener('touchend', handleDragEnd);
     }
     
     if (topGradient) {
@@ -745,6 +764,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainCircle = document.querySelector('.circle');
     if (mainCircle) {
       mainCircle.style.opacity = '1';
+    }
+  });
+
+  // 터치 이벤트 리스너 추가
+  document.addEventListener('touchstart', handleDragStart, { passive: false });
+  document.addEventListener('touchend', (ev) => {
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      longPressTimer = null;
+    }
+    
+    // 드래그가 아닌 경우에만 처리
+    if (!isDragging) {
+      if (topGradient) {
+        topGradient.classList.remove('is-visible');
+      }
+      // 상단 원 다시 보이기
+      const mainCircle = document.querySelector('.circle');
+      if (mainCircle) {
+        mainCircle.style.opacity = '1';
+      }
     }
   });
 
