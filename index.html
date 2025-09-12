@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Circle Preview</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Dot Page -->
+  <main class="container page" id="dot-page">
+    <div class="circle" aria-label="decorative circle" role="img"></div>
+  </main>
+  
+  <!-- Line Page -->
+  <main class="container page" id="line-page">
+    <header class="page-header">
+      <h1 class="page-title">archive</h1>
+    </header>
+    <div class="chip-container">
+      <button class="chip chip-active" data-chip="all">All</button>
+      <button class="chip chip-inactive" data-chip="sep">Sep</button>
+      <button class="chip chip-inactive" data-chip="aug">Aug</button>
+      <button class="chip chip-inactive" data-chip="jul">Jul</button>
+    </div>
+    <div class="list-container">
+      <!-- List items will be dynamically generated -->
+    </div>
+  </main>
+  
+  <!-- Space Page -->
+  <main class="container page" id="space-page">
+    <header class="page-header">
+      <h1 class="page-title">archive</h1>
+    </header>
+    <div class="chip-container">
+      <button class="chip chip-active" data-chip="all">All</button>
+      <button class="chip chip-inactive" data-chip="sep">Sep</button>
+      <button class="chip chip-inactive" data-chip="aug">Aug</button>
+      <button class="chip chip-inactive" data-chip="jul">Jul</button>
+    </div>
+    <div class="list-container">
+      <!-- List items will be dynamically generated -->
+    </div>
+  </main>
+  <div class="dot-canvas" aria-hidden="true"></div>
+  <!-- Top gradient for long press -->
+  <div class="top-gradient" aria-hidden="true">
+    <div class="drop-to-delete-text">Drop to Delete</div>
+  </div>
+  <!-- Unified input interaction layer -->
+  <div class="input-interaction-layer" role="dialog" aria-labelledby="input-title-text" aria-modal="true">
+    <div class="input-circle">
+      <div class="input-circle-content" contenteditable="true" data-placeholder="enter word" role="textbox" aria-label="enter word"></div>
+    </div>
+    <h2 class="input-title-text" id="input-title-text">what is</h2>
+    <div class="input-description-text" contenteditable="true" data-placeholder="enter a line" role="textbox" aria-label="enter a line"></div>
+  </div>
+  <nav class="bottom-nav" aria-label="primary navigation" role="tablist">
+    <button class="nav-item is-active" type="button" data-tab="dot" aria-label="Dot" role="tab" aria-selected="true">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="5" fill="#F8F4DB" />
+      </svg>
+      <span>Dot</span>
+    </button>
+    <button class="nav-item" type="button" data-tab="line" aria-label="Line" role="tab" aria-selected="false">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <line x1="5" y1="12" x2="19" y2="12" stroke="#F8F4DB" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      <span>Line</span>
+    </button>
+    <button class="nav-item" type="button" data-tab="space" aria-label="Space" role="tab" aria-selected="false">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="6" y="6" width="12" height="12" stroke="#F8F4DB" stroke-width="2" rx="3" />
+      </svg>
+      <span>Space</span>
+    </button>
+  </nav>
+  <script src="app.js"></script>
+</body>
+</html>
