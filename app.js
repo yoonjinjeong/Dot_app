@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Page Management
   let currentPage = 'dot';
+  let currentWordDetail = null;
   
   const showPage = (pageId) => {
     // Hide all pages
@@ -36,8 +37,22 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.style.overflow = 'auto';
     }
     
+    // Update navigation for word-detail page
+    if (pageId === 'word-detail') {
+      // Hide navigation for word detail page
+      document.querySelector('.bottom-nav').style.display = 'none';
+    } else {
+      // Show navigation for other pages
+      document.querySelector('.bottom-nav').style.display = 'flex';
+    }
+    
     // Update navigation
     updateNavigation(pageId);
+    
+    // Update space page stats when showing space page
+    if (pageId === 'space') {
+      updateSpaceStats();
+    }
   };
   
   const updateNavigation = (activeTab) => {
@@ -53,6 +68,51 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
   
+  // Function to show word detail page
+  const showWordDetail = (word) => {
+    currentWordDetail = word;
+    
+    // Update word text
+    const detailWordText = document.getElementById('detail-word-text');
+    if (detailWordText) {
+      detailWordText.textContent = word;
+    }
+    
+    // Update word detail body with descriptions
+    updateWordDetailBody(word);
+    
+    // Show word detail page
+    showPage('word-detail');
+  };
+  
+  // Function to update word detail body
+  const updateWordDetailBody = (word) => {
+    const wordDetailBody = document.getElementById('word-detail-body');
+    if (!wordDetailBody) return;
+    
+    // Clear existing content
+    wordDetailBody.innerHTML = '';
+    
+    // Find all entries for this word
+    const wordEntries = archiveData.filter(item => item.word === word);
+    
+    // Sort by date (newest first)
+    wordEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    // Create detail items
+    wordEntries.forEach(entry => {
+      const detailItem = document.createElement('div');
+      detailItem.className = 'word-detail-item';
+      
+      detailItem.innerHTML = `
+        <div class="list-date">${entry.formattedDate} | ${entry.count}</div>
+        <div class="list-text">${entry.line}</div>
+      `;
+      
+      wordDetailBody.appendChild(detailItem);
+    });
+  };
+  
   // Navigation event listeners
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', (ev) => {
@@ -61,8 +121,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   
+  // Function to update space page statistics
+  const updateSpaceStats = () => {
+    // Calculate total count (sum of all counts)
+    const totalCount = archiveData.reduce((sum, item) => sum + item.count, 0);
+    
+    // Calculate max count (highest count for any word)
+    const maxCount = archiveData.length > 0 ? Math.max(...archiveData.map(item => item.count)) : 0;
+    
+    // Update DOM elements
+    const totalCountElement = document.getElementById('total-count');
+    const maxCountElement = document.getElementById('max-count');
+    
+    if (totalCountElement) {
+      totalCountElement.textContent = totalCount;
+    }
+    if (maxCountElement) {
+      maxCountElement.textContent = maxCount;
+    }
+  };
+  
   // Initialize with dot page
   showPage('dot');
+  
+  // Close button event listener
+  document.getElementById('close-btn').addEventListener('click', () => {
+    showPage('line'); // Go back to line page
+  });
   
   // Chip functionality
   const handleChipClick = (ev) => {
@@ -148,19 +233,28 @@ document.addEventListener('DOMContentLoaded', () => {
           const listItem = document.createElement('div');
           listItem.className = 'list-item';
           
-          listItem.innerHTML = `
-            <div class="list-left">
-              <div class="list-circle"></div>
-              <span class="list-word">${item.word}</span>
-            </div>
-            <div class="list-right">
-              <div class="list-date">${item.formattedDate} | ${item.count}</div>
-              <div class="list-text">${item.line}</div>
-            </div>
-          `;
+        listItem.innerHTML = `
+          <div class="list-left">
+            <div class="list-circle"></div>
+            <span class="list-word clickable-word" data-word="${item.word}">${item.word}</span>
+          </div>
+          <div class="list-right">
+            <div class="list-date">${item.formattedDate} | ${item.count}</div>
+            <div class="list-text">${item.line}</div>
+          </div>
+        `;
           
           container.appendChild(listItem);
         });
+      });
+    });
+    
+    // Add click event listeners to clickable words
+    document.querySelectorAll('.clickable-word').forEach(wordElement => {
+      wordElement.addEventListener('click', (ev) => {
+        const word = ev.target.getAttribute('data-word');
+        console.log('Word clicked:', word);
+        showWordDetail(word);
       });
     });
   };

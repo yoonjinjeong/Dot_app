@@ -15,7 +15,7 @@
   <!-- Line Page -->
   <main class="container page" id="line-page">
     <header class="page-header">
-      <h1 class="page-title">archive</h1>
+      <h1 class="page-title">Archive</h1>
     </header>
     <div class="chip-container">
       <button class="chip chip-active" data-chip="all">All</button>
@@ -30,17 +30,61 @@
   
   <!-- Space Page -->
   <main class="container page" id="space-page">
-    <header class="page-header">
-      <h1 class="page-title">archive</h1>
+    <header class="space-header">
+      <h1 class="space-title">Profile</h1>
     </header>
-    <div class="chip-container">
-      <button class="chip chip-active" data-chip="all">All</button>
-      <button class="chip chip-inactive" data-chip="sep">Sep</button>
-      <button class="chip chip-inactive" data-chip="aug">Aug</button>
-      <button class="chip chip-inactive" data-chip="jul">Jul</button>
+    
+    <div class="achievement-box">
+      <h2 class="achievement-title">achievement</h2>
+      <div class="achievement-body">
+        <div class="achievement-item">
+          <span class="achievement-label">Length</span>
+          <div class="achievement-value-unit">
+            <span class="achievement-value" id="total-count">0</span>
+            <span class="achievement-unit">dots</span>
+          </div>
+        </div>
+        <div class="achievement-item">
+          <span class="achievement-label">Depth</span>
+          <div class="achievement-value-unit">
+            <span class="achievement-value" id="max-count">0</span>
+            <span class="achievement-unit">times</span>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="list-container">
-      <!-- List items will be dynamically generated -->
+    
+    <div class="settings-section policy-section">
+      <h3 class="settings-title">Policy and Terms</h3>
+      <div class="settings-divider"></div>
+      <button class="settings-button">Service Terms</button>
+      <button class="settings-button">Policy</button>
+    </div>
+    
+    <div class="settings-section account-section">
+      <h3 class="settings-title">Account</h3>
+      <div class="settings-divider"></div>
+      <button class="settings-button">Delete Account</button>
+      <button class="settings-button">Log Out</button>
+    </div>
+  </main>
+  
+  <!-- Word Detail Page -->
+  <main class="container page" id="word-detail-page">
+    <button class="close-btn" id="close-btn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M18 6L6 18M6 6L18 18" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="word-detail-left">
+      <div class="list-circle"></div>
+      <span class="list-word" id="detail-word-text">word</span>
+    </div>
+    <button class="add-today-btn" id="add-today-btn">Add for Today</button>
+    <button class="add-today-btn" id="add-today-btn-2">Write Now</button>
+    <div class="word-detail-divider"></div>
+    <div class="word-detail-body" id="word-detail-body">
+      <!-- Word descriptions will be dynamically generated -->
     </div>
   </main>
   <div class="dot-canvas" aria-hidden="true"></div>
