@@ -558,6 +558,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // 드래그 핸들러 함수들
   const handleDragMove = (ev) => {
     if (isDragging && draggedElement) {
+      // 터치 이벤트의 기본 동작 방지 (스크롤, 줌 등)
+      if (ev.touches) {
+        ev.preventDefault();
+      }
+      
       // 드래그 중인 원을 마우스/터치 위치로 이동
       const clientX = ev.clientX || (ev.touches && ev.touches[0].clientX);
       const clientY = ev.clientY || (ev.touches && ev.touches[0].clientY);
@@ -658,10 +663,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // 햅틱 피드백 함수
+  const triggerHaptic = () => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(50); // 50ms 진동
+    }
+  };
+
   // 공통 드래그 시작 함수
   const handleDragStart = (ev) => {
+    console.log('handleDragStart called', ev.type, ev.target);
     const target = ev.target.closest('.placed-dot');
     if (target) {
+      console.log('Found placed-dot target:', target.textContent);
+      // 터치 이벤트의 기본 동작 방지
+      if (ev.touches) {
+        ev.preventDefault();
+        console.log('Prevented default touch behavior');
+      }
+      
       isLongPress = false;
       isDragging = false;
       
@@ -680,12 +700,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const startX = clientX;
       const startY = clientY;
       
-      // Long press timer 시작 (500ms)
+      // Long press timer 시작 (300ms)
       longPressTimer = setTimeout(() => {
         console.log('Long press detected on:', target.textContent);
         isLongPress = true;
         isDragging = true;
         draggedElement = target;
+        
+        // 햅틱 피드백
+        triggerHaptic();
         
         if (topGradient) {
           topGradient.classList.add('is-visible');
@@ -709,9 +732,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('mouseup', handleDragEnd);
         document.addEventListener('touchmove', handleDragMove, { passive: false });
         document.addEventListener('touchend', handleDragEnd);
-      }, 500);
+      }, 300);
     }
-  });
+  };
 
   document.addEventListener('mouseup', (ev) => {
     if (longPressTimer) {
@@ -770,6 +793,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // 터치 이벤트 리스너 추가
   document.addEventListener('touchstart', handleDragStart, { passive: false });
   document.addEventListener('touchend', (ev) => {
+    // 터치 이벤트의 기본 동작 방지
+    ev.preventDefault();
+    
     if (longPressTimer) {
       clearTimeout(longPressTimer);
       longPressTimer = null;
