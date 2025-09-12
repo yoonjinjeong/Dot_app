@@ -558,7 +558,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // 드래그 핸들러 함수들
   const handleDragMove = (ev) => {
     if (isDragging && draggedElement) {
-      ev.preventDefault(); // Prevent scrolling on mobile
+      // Only preventDefault for touch events to avoid blocking normal clicks
+      if (ev.touches) {
+        ev.preventDefault(); // Prevent scrolling on mobile
+      }
       
       // Get coordinates (mouse or touch)
       const clientX = ev.clientX || (ev.touches && ev.touches[0]?.clientX);
@@ -707,6 +710,9 @@ document.addEventListener('DOMContentLoaded', () => {
       document.addEventListener('mouseup', handleDragEnd);
       document.addEventListener('touchmove', handleDragMove, { passive: false });
       document.addEventListener('touchend', handleDragEnd);
+      
+      // Long press가 감지된 후에만 터치 스크롤 방지
+      // 이 시점에서 preventDefault를 적용
     }, 300);
   };
 
@@ -722,7 +728,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('touchstart', (ev) => {
     const target = ev.target.closest('.placed-dot');
     if (target && ev.touches.length === 1) {
-      ev.preventDefault(); // Prevent scrolling
+      // Don't preventDefault here - let normal clicks work
       const touch = ev.touches[0];
       startDrag(target, touch.clientX, touch.clientY);
     }
