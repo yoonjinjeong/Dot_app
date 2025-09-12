@@ -673,9 +673,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // 공통 드래그 시작 함수
   const handleDragStart = (ev) => {
     console.log('handleDragStart called', ev.type, ev.target);
-    const target = ev.target.closest('.placed-dot');
-    if (target) {
-      console.log('Found placed-dot target:', target.textContent);
+    console.log('Target classList:', ev.target.classList);
+    console.log('Target tagName:', ev.target.tagName);
+    
+    // 텍스트 노드인 경우 부모 요소를 확인
+    let target = ev.target;
+    if (target.nodeType === Node.TEXT_NODE) {
+      target = target.parentElement;
+    }
+    
+    const placedDot = target.closest('.placed-dot');
+    console.log('Closest placed-dot:', placedDot);
+    
+    if (placedDot) {
+      console.log('Found placed-dot target:', placedDot.textContent);
       // 터치 이벤트의 기본 동작 방지
       if (ev.touches) {
         ev.preventDefault();
@@ -692,7 +703,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (clientX === undefined || clientY === undefined) return;
       
       // 드래그 시작을 위한 위치 저장
-      const rect = target.getBoundingClientRect();
+      const rect = placedDot.getBoundingClientRect();
       dragOffset.x = clientX - rect.left;
       dragOffset.y = clientY - rect.top;
       
@@ -702,10 +713,10 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Long press timer 시작 (300ms)
       longPressTimer = setTimeout(() => {
-        console.log('Long press detected on:', target.textContent);
+        console.log('Long press detected on:', placedDot.textContent);
         isLongPress = true;
         isDragging = true;
-        draggedElement = target;
+        draggedElement = placedDot;
         
         // 햅틱 피드백
         triggerHaptic();
@@ -720,12 +731,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // 드래그 시작 - 원을 터치/마우스 위치로 이동
-        target.style.position = 'fixed';
-        target.style.zIndex = '1000';
-        target.style.pointerEvents = 'none';
-        target.style.transform = 'none';
-        target.style.left = (startX - dragOffset.x) + 'px';
-        target.style.top = (startY - dragOffset.y) + 'px';
+        placedDot.style.position = 'fixed';
+        placedDot.style.zIndex = '1000';
+        placedDot.style.pointerEvents = 'none';
+        placedDot.style.transform = 'none';
+        placedDot.style.left = (startX - dragOffset.x) + 'px';
+        placedDot.style.top = (startY - dragOffset.y) + 'px';
         
         // 전역 드래그 이벤트 활성화 (마우스 + 터치)
         document.addEventListener('mousemove', handleDragMove);
@@ -736,6 +747,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // 마우스 이벤트 리스너
+  document.addEventListener('mousedown', handleDragStart);
   document.addEventListener('mouseup', (ev) => {
     if (longPressTimer) {
       clearTimeout(longPressTimer);
