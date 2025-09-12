@@ -558,16 +558,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // 드래그 핸들러 함수들
   const handleDragMove = (ev) => {
     if (isDragging && draggedElement) {
-      // 터치 이벤트의 기본 동작 방지 (스크롤, 줌 등)
-      if (ev.touches) {
-        ev.preventDefault();
-      }
+      ev.preventDefault(); // Prevent scrolling on mobile
       
-      // 드래그 중인 원을 마우스/터치 위치로 이동
-      const clientX = ev.clientX || (ev.touches && ev.touches[0].clientX);
-      const clientY = ev.clientY || (ev.touches && ev.touches[0].clientY);
+      // Get coordinates (mouse or touch)
+      const clientX = ev.clientX || (ev.touches && ev.touches[0]?.clientX);
+      const clientY = ev.clientY || (ev.touches && ev.touches[0]?.clientY);
       
       if (clientX !== undefined && clientY !== undefined) {
+        // 드래그 중인 원을 위치로 이동
         const newX = clientX - dragOffset.x;
         const newY = clientY - dragOffset.y;
         draggedElement.style.left = newX + 'px';
@@ -579,10 +577,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const handleDragEnd = (ev) => {
     if (isDragging && draggedElement) {
-      // 드래그 종료 - 드롭 영역 확인
-      const clientX = ev.clientX || (ev.changedTouches && ev.changedTouches[0].clientX);
-      const clientY = ev.clientY || (ev.changedTouches && ev.changedTouches[0].clientY);
+      // Get coordinates (mouse or touch)
+      const clientX = ev.clientX || (ev.changedTouches && ev.changedTouches[0]?.clientX);
+      const clientY = ev.clientY || (ev.changedTouches && ev.changedTouches[0]?.clientY);
       
+      // 드래그 종료 - 드롭 영역 확인
       const gradientRect = topGradient?.getBoundingClientRect();
       if (gradientRect && clientX !== undefined && clientY !== undefined &&
           clientX >= gradientRect.left && 
@@ -652,6 +651,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // 이벤트 리스너 제거
     document.removeEventListener('mousemove', handleDragMove);
     document.removeEventListener('mouseup', handleDragEnd);
+    document.removeEventListener('touchmove', handleDragMove);
+    document.removeEventListener('touchend', handleDragEnd);
     
     if (topGradient) {
       topGradient.classList.remove('is-visible');
@@ -663,93 +664,90 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // 햅틱 피드백 함수
-  const triggerHaptic = () => {
-    if ('vibrate' in navigator) {
-      navigator.vibrate(50); // 50ms 진동
-    }
-  };
-
-  // 공통 드래그 시작 함수
-  const handleDragStart = (ev) => {
-    console.log('handleDragStart called', ev.type, ev.target);
-    console.log('Target classList:', ev.target.classList);
-    console.log('Target tagName:', ev.target.tagName);
+  // Common function for starting drag (mouse and touch)
+  const startDrag = (target, clientX, clientY) => {
+    isLongPress = false;
+    isDragging = false;
     
-    // 텍스트 노드인 경우 부모 요소를 확인
-    let target = ev.target;
-    if (target.nodeType === Node.TEXT_NODE) {
-      target = target.parentElement;
-    }
+    // 드래그 시작을 위한 위치 저장
+    const rect = target.getBoundingClientRect();
+    dragOffset.x = clientX - rect.left;
+    dragOffset.y = clientY - rect.top;
     
-    const placedDot = target.closest('.placed-dot');
-    console.log('Closest placed-dot:', placedDot);
+    // 위치를 저장 (타이머 내부에서 사용)
+    const startX = clientX;
+    const startY = clientY;
     
-    if (placedDot) {
-      console.log('Found placed-dot target:', placedDot.textContent);
-      // 터치 이벤트의 기본 동작 방지
-      if (ev.touches) {
-        ev.preventDefault();
-        console.log('Prevented default touch behavior');
+    // Long press timer 시작 (300ms)
+    longPressTimer = setTimeout(() => {
+      console.log('Long press detected on:', target.textContent);
+      isLongPress = true;
+      isDragging = true;
+      draggedElement = target;
+      
+      if (topGradient) {
+        topGradient.classList.add('is-visible');
+      }
+      // 상단 원 숨기기
+      const mainCircle = document.querySelector('.circle');
+      if (mainCircle) {
+        mainCircle.style.opacity = '0';
       }
       
-      isLongPress = false;
-      isDragging = false;
+      // 드래그 시작 - 원을 위치로 이동
+      target.style.position = 'fixed';
+      target.style.zIndex = '1000';
+      target.style.pointerEvents = 'none';
+      target.style.transform = 'none';
+      target.style.left = (startX - dragOffset.x) + 'px';
+      target.style.top = (startY - dragOffset.y) + 'px';
       
-      // 터치/마우스 위치 가져오기
-      const clientX = ev.clientX || (ev.touches && ev.touches[0].clientX);
-      const clientY = ev.clientY || (ev.touches && ev.touches[0].clientY);
-      
-      if (clientX === undefined || clientY === undefined) return;
-      
-      // 드래그 시작을 위한 위치 저장
-      const rect = placedDot.getBoundingClientRect();
-      dragOffset.x = clientX - rect.left;
-      dragOffset.y = clientY - rect.top;
-      
-      // 위치를 저장 (타이머 내부에서 사용)
-      const startX = clientX;
-      const startY = clientY;
-      
-      // Long press timer 시작 (300ms)
-      longPressTimer = setTimeout(() => {
-        console.log('Long press detected on:', placedDot.textContent);
-        isLongPress = true;
-        isDragging = true;
-        draggedElement = placedDot;
-        
-        // 햅틱 피드백
-        triggerHaptic();
-        
-        if (topGradient) {
-          topGradient.classList.add('is-visible');
-        }
-        // 상단 원 숨기기
-        const mainCircle = document.querySelector('.circle');
-        if (mainCircle) {
-          mainCircle.style.opacity = '0';
-        }
-        
-        // 드래그 시작 - 원을 터치/마우스 위치로 이동
-        placedDot.style.position = 'fixed';
-        placedDot.style.zIndex = '1000';
-        placedDot.style.pointerEvents = 'none';
-        placedDot.style.transform = 'none';
-        placedDot.style.left = (startX - dragOffset.x) + 'px';
-        placedDot.style.top = (startY - dragOffset.y) + 'px';
-        
-        // 전역 드래그 이벤트 활성화 (마우스 + 터치)
-        document.addEventListener('mousemove', handleDragMove);
-        document.addEventListener('mouseup', handleDragEnd);
-        document.addEventListener('touchmove', handleDragMove, { passive: false });
-        document.addEventListener('touchend', handleDragEnd);
-      }, 300);
-    }
+      // 전역 이벤트 활성화
+      document.addEventListener('mousemove', handleDragMove);
+      document.addEventListener('mouseup', handleDragEnd);
+      document.addEventListener('touchmove', handleDragMove, { passive: false });
+      document.addEventListener('touchend', handleDragEnd);
+    }, 300);
   };
 
-  // 마우스 이벤트 리스너
-  document.addEventListener('mousedown', handleDragStart);
+  // Mouse events
+  document.addEventListener('mousedown', (ev) => {
+    const target = ev.target.closest('.placed-dot');
+    if (target) {
+      startDrag(target, ev.clientX, ev.clientY);
+    }
+  });
+
+  // Touch events
+  document.addEventListener('touchstart', (ev) => {
+    const target = ev.target.closest('.placed-dot');
+    if (target && ev.touches.length === 1) {
+      ev.preventDefault(); // Prevent scrolling
+      const touch = ev.touches[0];
+      startDrag(target, touch.clientX, touch.clientY);
+    }
+  });
+
   document.addEventListener('mouseup', (ev) => {
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      longPressTimer = null;
+    }
+    
+    // 드래그가 아닌 경우에만 처리
+    if (!isDragging) {
+      if (topGradient) {
+        topGradient.classList.remove('is-visible');
+      }
+      // 상단 원 다시 보이기
+      const mainCircle = document.querySelector('.circle');
+      if (mainCircle) {
+        mainCircle.style.opacity = '1';
+      }
+    }
+  });
+
+  document.addEventListener('touchend', (ev) => {
     if (longPressTimer) {
       clearTimeout(longPressTimer);
       longPressTimer = null;
@@ -789,8 +787,6 @@ document.addEventListener('DOMContentLoaded', () => {
       // 이벤트 리스너 제거
       document.removeEventListener('mousemove', handleDragMove);
       document.removeEventListener('mouseup', handleDragEnd);
-      document.removeEventListener('touchmove', handleDragMove);
-      document.removeEventListener('touchend', handleDragEnd);
     }
     
     if (topGradient) {
@@ -800,30 +796,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainCircle = document.querySelector('.circle');
     if (mainCircle) {
       mainCircle.style.opacity = '1';
-    }
-  });
-
-  // 터치 이벤트 리스너 추가
-  document.addEventListener('touchstart', handleDragStart, { passive: false });
-  document.addEventListener('touchend', (ev) => {
-    // 터치 이벤트의 기본 동작 방지
-    ev.preventDefault();
-    
-    if (longPressTimer) {
-      clearTimeout(longPressTimer);
-      longPressTimer = null;
-    }
-    
-    // 드래그가 아닌 경우에만 처리
-    if (!isDragging) {
-      if (topGradient) {
-        topGradient.classList.remove('is-visible');
-      }
-      // 상단 원 다시 보이기
-      const mainCircle = document.querySelector('.circle');
-      if (mainCircle) {
-        mainCircle.style.opacity = '1';
-      }
     }
   });
 
