@@ -249,11 +249,19 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
     
-    // Add click event listeners to clickable words
+    // Add click and touch event listeners to clickable words
     document.querySelectorAll('.clickable-word').forEach(wordElement => {
       wordElement.addEventListener('click', (ev) => {
+        ev.preventDefault();
         const word = ev.target.getAttribute('data-word');
         console.log('Word clicked:', word);
+        showWordDetail(word);
+      });
+      
+      wordElement.addEventListener('touchend', (ev) => {
+        ev.preventDefault();
+        const word = ev.target.getAttribute('data-word');
+        console.log('Word touched:', word);
         showWordDetail(word);
       });
     });

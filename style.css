@@ -152,6 +152,11 @@ html, body {
 .clickable-word {
   cursor: pointer;
   transition: opacity 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  min-height: 44px;
+  display: inline-block;
+  padding: 8px 0;
 }
 
 .clickable-word:hover {
@@ -265,6 +270,11 @@ html, body {
 }
 
 /* Space Page (Profile) */
+#space-page {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .space-header {
   position: absolute;
   left: 17px;
@@ -287,6 +297,7 @@ html, body {
   height: 158px;
   background: rgba(248, 244, 219, 0.9);
   border-radius: 8px;
+  min-height: 158px;
 }
 
 .achievement-title {
@@ -362,10 +373,12 @@ html, body {
 
 .policy-section {
   top: 350px;
+  min-height: 100px;
 }
 
 .account-section {
   top: 492px;
+  min-height: 100px;
 }
 
 .settings-title {
