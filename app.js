@@ -33,8 +33,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Disable/enable scrolling based on page
     if (pageId === 'dot') {
       document.body.style.overflow = 'hidden';
+      document.body.classList.remove('space-page-active');
+    } else if (pageId === 'space') {
+      document.body.style.overflow = 'auto';
+      document.body.classList.add('space-page-active');
     } else {
       document.body.style.overflow = 'auto';
+      document.body.classList.remove('space-page-active');
     }
     
     // Update navigation for word-detail page
@@ -251,20 +256,35 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Add click and touch event listeners to clickable words
     document.querySelectorAll('.clickable-word').forEach(wordElement => {
-      wordElement.addEventListener('click', (ev) => {
-        ev.preventDefault();
-        const word = ev.target.getAttribute('data-word');
-        console.log('Word clicked:', word);
-        showWordDetail(word);
-      });
+      // Remove existing listeners to prevent duplicates
+      wordElement.removeEventListener('click', handleWordClick);
+      wordElement.removeEventListener('touchend', handleWordTouch);
       
-      wordElement.addEventListener('touchend', (ev) => {
-        ev.preventDefault();
-        const word = ev.target.getAttribute('data-word');
-        console.log('Word touched:', word);
-        showWordDetail(word);
-      });
+      // Add new listeners
+      wordElement.addEventListener('click', handleWordClick);
+      wordElement.addEventListener('touchend', handleWordTouch);
     });
+    
+    // Define event handlers
+    function handleWordClick(ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const word = ev.target.getAttribute('data-word');
+      console.log('Word clicked:', word);
+      if (word) {
+        showWordDetail(word);
+      }
+    }
+    
+    function handleWordTouch(ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const word = ev.target.getAttribute('data-word');
+      console.log('Word touched:', word);
+      if (word) {
+        showWordDetail(word);
+      }
+    }
   };
   
   // Function to format date to abbreviated format (Jan 01)

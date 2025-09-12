@@ -157,6 +157,22 @@ html, body {
   min-height: 44px;
   display: inline-block;
   padding: 8px 0;
+  position: relative;
+  z-index: 10;
+}
+
+/* 모바일에서 클릭 가능한 단어 강화 */
+@media (max-width: 768px) {
+  .clickable-word {
+    min-height: 48px !important;
+    padding: 12px 0 !important;
+    -webkit-tap-highlight-color: transparent !important;
+    touch-action: manipulation !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+  }
 }
 
 .clickable-word:hover {
@@ -273,6 +289,51 @@ html, body {
 #space-page {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  height: 100vh;
+  position: relative;
+}
+
+/* 모바일에서 Space 페이지 스크롤 강제 활성화 */
+@media (max-width: 768px) {
+  #space-page {
+    overflow-y: scroll !important;
+    -webkit-overflow-scrolling: touch !important;
+    height: 100vh !important;
+    position: relative !important;
+  }
+  
+  body.space-page-active {
+    overflow: auto !important;
+    position: relative !important;
+  }
+  
+  /* 모바일에서 Space 페이지 요소들 강제 표시 */
+  .achievement-box {
+    position: absolute !important;
+    left: 17px !important;
+    top: 130px !important;
+    right: 20px !important;
+    height: 158px !important;
+    min-height: 158px !important;
+    background: rgba(248, 244, 219, 0.9) !important;
+    border-radius: 8px !important;
+    display: block !important;
+  }
+  
+  .settings-section {
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    min-height: 100px !important;
+  }
+  
+  .policy-section {
+    top: 350px !important;
+  }
+  
+  .account-section {
+    top: 492px !important;
+  }
 }
 
 .space-header {
