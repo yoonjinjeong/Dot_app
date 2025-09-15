@@ -17,22 +17,58 @@ html, body {
 
 .container {
   min-height: 100dvh;
-  display: grid;
-  place-items: center;
   position: relative;
 }
 
+/* Login page uses flex centering */
+#login-page.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Other pages use block layout for absolute positioned elements */
+#dot-page.container,
+#line-page.container,
+#space-page.container,
+#word-detail-page.container {
+  display: block;
+  position: relative;
+}
+
+/* When pages are active, ensure proper display */
+#dot-page.is-active,
+#line-page.is-active,
+#space-page.is-active,
+#word-detail-page.is-active {
+  display: block !important;
+  opacity: 1 !important;
+}
+
+
 /* Page Management */
 .page {
-  display: none;
+  display: none !important;
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
 .page.is-active {
-  display: grid;
-  opacity: 1;
+  display: block !important;
+  opacity: 1 !important;
 }
+
+/* Login page specific - use flex instead of grid */
+#login-page.is-active {
+  display: flex !important;
+  opacity: 1 !important;
+}
+
+/* Hide bottom navigation on login page - removed !important to allow JS override */
+#login-page.is-active ~ .bottom-nav {
+  display: none;
+}
+
 
 /* Dot page specific - disable scrolling */
 #dot-page {
@@ -283,6 +319,48 @@ html, body {
 
 .word-detail-item:last-child {
   margin-bottom: 0;
+}
+
+/* Login Page - styles moved to container section above */
+
+.login-container {
+  text-align: center;
+  padding: 40px;
+}
+
+.login-title {
+  font-family: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 48px;
+  font-weight: 600;
+  color: #F8F4DB;
+  margin-bottom: 60px;
+  letter-spacing: -0.02em;
+}
+
+.login-btn {
+  font-family: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: #181818;
+  background-color: #F8F4DB;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 48px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px rgba(248, 244, 219, 0.3);
+  min-width: 200px;
+}
+
+.login-btn:hover {
+  background-color: #f0ead6;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(248, 244, 219, 0.4);
+}
+
+.login-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 15px rgba(248, 244, 219, 0.3);
 }
 
 /* Space Page (Profile) */
@@ -541,7 +619,7 @@ html, body {
   box-shadow: 0 0 20px rgba(255,255,255,0.25);
   position: absolute;
   left: 50%;
-  top: 128px;
+  top: 94px;
   transform: translateX(-50%);
   transition: width .2s ease, height .2s ease, top .2s ease, box-shadow .2s ease;
 }
@@ -549,7 +627,8 @@ html, body {
 .circle.is-expanded {
   width: 180px;
   height: 180px;
-  top: 200px;
+  top: 94px;
+  transform: translateX(-50%);
 }
 
 .circle-input-wrapper {
@@ -583,6 +662,7 @@ html, body {
   display: flex;
   justify-content: space-around;
   align-items: center;
+  z-index: 1000;
   transition: transform .2s ease, opacity .2s ease;
 }
 
@@ -624,6 +704,12 @@ html, body {
   transform: translateY(100%);
   opacity: 0;
   pointer-events: none;
+}
+
+/* Expanded screen: adjust circle position */
+.is-expanded-screen .circle {
+  top: 94px !important;
+  transform: translateX(-50%) !important;
 }
 
 /* Unified input interaction layer */

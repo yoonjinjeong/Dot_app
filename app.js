@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!circle) return;
 
   // Page Management
-  let currentPage = 'dot';
+  let currentPage = 'login'; // Start with login page
   let currentWordDetail = null;
   
   const showPage = (pageId) => {
@@ -27,6 +27,16 @@ document.addEventListener('DOMContentLoaded', () => {
         dotCanvas.style.display = 'block';
       } else {
         dotCanvas.style.display = 'none';
+      }
+    }
+    
+    // Hide bottom navigation on login page
+    const bottomNav = document.querySelector('.bottom-nav');
+    if (bottomNav) {
+      if (pageId === 'login') {
+        bottomNav.style.display = 'none';
+      } else {
+        bottomNav.style.setProperty('display', 'flex', 'important');
       }
     }
     
@@ -146,8 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   
-  // Initialize with dot page
-  showPage('dot');
+  // Initialize with login page
+  showPage('login');
   
   // Close button event listener
   document.getElementById('close-btn').addEventListener('click', () => {
@@ -976,4 +986,13 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', () => {
     // nothing persistent to recompute except future bounds; step() uses live values
   });
+
+  // Login button functionality
+  const loginBtn = document.getElementById('login-btn');
+  if (loginBtn) {
+    loginBtn.addEventListener('click', function() {
+      // Use showPage function to properly switch to dot page
+      showPage('dot');
+    });
+  }
 });
