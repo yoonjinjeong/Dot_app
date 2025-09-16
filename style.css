@@ -23,8 +23,9 @@ html, body {
 /* Login page uses flex centering */
 #login-page.container {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  padding-top: 98px;
 }
 
 /* Other pages use block layout for absolute positioned elements */
@@ -64,9 +65,9 @@ html, body {
   opacity: 1 !important;
 }
 
-/* Hide bottom navigation on login page - removed !important to allow JS override */
+/* Hide bottom navigation on login page */
 #login-page.is-active ~ .bottom-nav {
-  display: none;
+  display: none !important;
 }
 
 
@@ -84,7 +85,8 @@ html, body {
   z-index: 10;
 }
 
-.page-title {
+/* Small header style for page titles */
+.small-header {
   font-size: 26px;
   font-weight: 500;
   color: #ffffff;
@@ -164,8 +166,9 @@ html, body {
 /* List Left */
 .list-left {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
   width: 100px;
   flex-shrink: 0;
 }
@@ -183,6 +186,13 @@ html, body {
   font-weight: 500;
   color: #ffffff;
   line-height: 1;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  padding-right: 0;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .clickable-word {
@@ -190,9 +200,6 @@ html, body {
   transition: opacity 0.2s ease;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  min-height: 44px;
-  display: inline-block;
-  padding: 8px 0;
   position: relative;
   z-index: 10;
 }
@@ -200,8 +207,6 @@ html, body {
 /* 모바일에서 클릭 가능한 단어 강화 */
 @media (max-width: 768px) {
   .clickable-word {
-    min-height: 48px !important;
-    padding: 12px 0 !important;
     -webkit-tap-highlight-color: transparent !important;
     touch-action: manipulation !important;
     user-select: none !important;
@@ -321,20 +326,92 @@ html, body {
   margin-bottom: 0;
 }
 
-/* Login Page - styles moved to container section above */
-
+/* Login Page - New Design */
 .login-container {
+  width: 100%;
+  max-width: 400px;
+  position: relative;
   text-align: center;
-  padding: 40px;
 }
 
-.login-title {
+.big-header {
   font-family: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 48px;
-  font-weight: 600;
-  color: #F8F4DB;
+  font-weight: 400;
+  color: #FFFFFF;
+  margin: 0 0 60px 0;
+  line-height: 1;
+}
+
+.input-group {
+  margin-bottom: 40px;
+  text-align: left;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.input-label {
+  font-family: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #FFFFFF;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.login-input {
+  font-family: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: #FFFFFF;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  width: 100%;
+  padding: 12px 0;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.login-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.login-input:focus {
+  border-bottom-color: #FFFFFF;
+}
+
+.search-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
   margin-bottom: 60px;
-  letter-spacing: -0.02em;
+  position: absolute;
+  top: 478px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+}
+
+.search-link {
+  font-family: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: #7a7a7a;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.search-link:hover {
+  color: #FFFFFF;
+}
+
+.vertical-divider {
+  width: 1px;
+  height: 15px;
+  background-color: #7a7a7a;
 }
 
 .login-btn {
@@ -349,7 +426,10 @@ html, body {
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 4px 20px rgba(248, 244, 219, 0.3);
-  min-width: 200px;
+  max-width: 300px;
+  width: 100%;
+  margin: 0 auto;
+  display: block;
 }
 
 .login-btn:hover {
@@ -389,7 +469,7 @@ html, body {
   .achievement-box {
     position: absolute !important;
     left: 17px !important;
-    top: 130px !important;
+    top: 150px !important;
     right: 20px !important;
     height: 158px !important;
     min-height: 158px !important;
@@ -406,11 +486,11 @@ html, body {
   }
   
   .policy-section {
-    top: 350px !important;
+    top: 370px !important;
   }
   
   .account-section {
-    top: 492px !important;
+    top: 512px !important;
   }
 }
 
@@ -420,18 +500,22 @@ html, body {
   top: 82px;
 }
 
-.space-title {
-  font-size: 26px;
-  font-weight: 500;
-  color: #ffffff;
-  line-height: 1;
-  margin: 0;
+.user-info {
+  margin-top: 8px;
 }
+
+.username {
+  font-family: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+}
+
 
 .achievement-box {
   position: absolute;
   left: 17px;
-  top: 130px;
+  top: 150px;
   right: 20px;
   height: 158px;
   background: rgba(248, 244, 219, 0.9);
@@ -511,12 +595,12 @@ html, body {
 }
 
 .policy-section {
-  top: 350px;
+  top: 370px;
   min-height: 100px;
 }
 
 .account-section {
-  top: 492px;
+  top: 512px;
   min-height: 100px;
 }
 
@@ -619,15 +703,15 @@ html, body {
   box-shadow: 0 0 20px rgba(255,255,255,0.25);
   position: absolute;
   left: 50%;
-  top: 94px;
+  top: 98px;
   transform: translateX(-50%);
-  transition: width .2s ease, height .2s ease, top .2s ease, box-shadow .2s ease;
+  transition: width .2s ease, height .2s ease, box-shadow .2s ease;
 }
 
 .circle.is-expanded {
   width: 180px;
   height: 180px;
-  top: 94px;
+  top: 98px;
   transform: translateX(-50%);
 }
 
@@ -708,7 +792,7 @@ html, body {
 
 /* Expanded screen: adjust circle position */
 .is-expanded-screen .circle {
-  top: 94px !important;
+  top: 98px !important;
   transform: translateX(-50%) !important;
 }
 
@@ -858,3 +942,4 @@ html, body {
   font-weight: 500;
   pointer-events: none;
 }
+

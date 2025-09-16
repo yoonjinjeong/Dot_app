@@ -10,7 +10,26 @@
   <!-- Login Page -->
   <main class="container page is-active" id="login-page">
     <div class="login-container">
-      <h1 class="login-title">Dot</h1>
+      <h1 class="big-header">Log in</h1>
+      
+      <div class="input-group">
+        <label class="input-label">ID</label>
+        <input type="text" class="login-input" placeholder="enter your id" id="id-input">
+      </div>
+      
+      <div class="input-group">
+        <label class="input-label">PW</label>
+        <input type="password" class="login-input" placeholder="enter your password" id="password-input">
+      </div>
+      
+      <div class="search-links">
+        <a href="#" class="search-link">아이디찾기</a>
+        <div class="vertical-divider"></div>
+        <a href="#" class="search-link">비밀번호 찾기</a>
+        <div class="vertical-divider"></div>
+        <a href="#" class="search-link">회원가입</a>
+      </div>
+      
       <button class="login-btn" id="login-btn">Log in</button>
     </div>
   </main>
@@ -23,7 +42,7 @@
   <!-- Line Page -->
   <main class="container page" id="line-page">
     <header class="page-header">
-      <h1 class="page-title">Archive</h1>
+      <h1 class="small-header">Archive</h1>
     </header>
     <div class="chip-container">
       <button class="chip chip-active" data-chip="all">All</button>
@@ -39,7 +58,10 @@
   <!-- Space Page -->
   <main class="container page" id="space-page">
     <header class="space-header">
-      <h1 class="space-title">Profile</h1>
+      <h1 class="small-header">Profile</h1>
+      <div class="user-info" id="user-info" style="display: none;">
+        <span class="username" id="username-display"></span>
+      </div>
     </header>
     
     <div class="achievement-box">

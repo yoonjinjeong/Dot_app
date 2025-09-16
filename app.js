@@ -3,6 +3,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.querySelector('.container');
   if (!circle) return;
 
+  // Authentication System
+  const Auth = {
+    isLoggedIn: () => localStorage.getItem('isLoggedIn') === 'true',
+    login: (username) => {
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('username', username);
+      showPage('dot');
+    },
+    logout: () => {
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('username');
+      showPage('login');
+    },
+    getUsername: () => localStorage.getItem('username')
+  };
+
   // Page Management
   let currentPage = 'login'; // Start with login page
   let currentWordDetail = null;
@@ -67,6 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update space page stats when showing space page
     if (pageId === 'space') {
       updateSpaceStats();
+      updateUserInfo();
     }
   };
   
@@ -155,14 +172,43 @@ document.addEventListener('DOMContentLoaded', () => {
       maxCountElement.textContent = maxCount;
     }
   };
+
+  const updateUserInfo = () => {
+    const userInfoElement = document.getElementById('user-info');
+    const usernameDisplay = document.getElementById('username-display');
+    
+    if (userInfoElement && usernameDisplay) {
+      const username = Auth.getUsername();
+      if (username) {
+        usernameDisplay.textContent = `안녕하세요, ${username}님`;
+        userInfoElement.style.display = 'block';
+      } else {
+        userInfoElement.style.display = 'none';
+      }
+    }
+  };
   
-  // Initialize with login page
-  showPage('login');
+  // Initialize based on login status
+  if (Auth.isLoggedIn()) {
+    showPage('dot');
+  } else {
+    showPage('login');
+  }
   
   // Close button event listener
   document.getElementById('close-btn').addEventListener('click', () => {
     showPage('line'); // Go back to line page
   });
+
+  // Logout button functionality
+  const logoutBtn = document.querySelector('.account-section .settings-button:last-child');
+  if (logoutBtn && logoutBtn.textContent.includes('Log Out')) {
+    logoutBtn.addEventListener('click', () => {
+      if (confirm('로그아웃 하시겠습니까?')) {
+        Auth.logout();
+      }
+    });
+  }
   
   // Chip functionality
   const handleChipClick = (ev) => {
@@ -987,12 +1033,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // nothing persistent to recompute except future bounds; step() uses live values
   });
 
-  // Login button functionality
+  // Login form functionality
   const loginBtn = document.getElementById('login-btn');
+  const idInput = document.getElementById('id-input');
+  const passwordInput = document.getElementById('password-input');
+  
   if (loginBtn) {
-    loginBtn.addEventListener('click', function() {
-      // Use showPage function to properly switch to dot page
-      showPage('dot');
+    loginBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      const username = idInput ? idInput.value.trim() : '';
+      const password = passwordInput ? passwordInput.value.trim() : '';
+      
+      // 간단한 로그인 검증 (실제로는 서버에서 검증)
+      if (username && password) {
+        // 로그인 성공
+        Auth.login(username);
+        
+        // 입력 필드 초기화
+        if (idInput) idInput.value = '';
+        if (passwordInput) passwordInput.value = '';
+      } else {
+        alert('아이디와 비밀번호를 입력해주세요.');
+      }
     });
   }
 });
